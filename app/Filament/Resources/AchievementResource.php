@@ -65,24 +65,26 @@ class AchievementResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image'),
+                // PERUBAHAN: Tambahkan ->circular() di sini
+                Tables\Columns\ImageColumn::make('image')
+                    ->circular(), 
                 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Prestasi')
-                    ->searchable() // Bisa dicari
+                    ->searchable()
                     ->description(fn (Achievement $record): string => $record->event_name ?? ''),
 
                 Tables\Columns\TextColumn::make('rank')
                     ->label('Peringkat')
                     ->badge()
                     ->color('success')
-                    ->searchable(), // PERUBAHAN: Peringkat (Juara 1, dst) bisa dicari
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('date')
                     ->label('Tanggal')
                     ->date('d M Y')
                     ->sortable()
-                    ->searchable(), // PERUBAHAN: Tanggal bisa dicari
+                    ->searchable(),
             ])
             ->actions([
                 EditAction::make(),
