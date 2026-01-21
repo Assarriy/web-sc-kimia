@@ -89,13 +89,24 @@ class OrganizationMemberResource extends Resource
                         'Pelatih' => 'success',
                         default => 'gray',
                     })
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sort_order')
                     ->label('Urutan')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Aktif'),
             ])
+            ->filters([
+                // FITUR BARU: Filter Aktif/Tidak Aktif
+                Tables\Filters\SelectFilter::make('is_active')
+                    ->label('Status Keaktifan')
+                    ->options([
+                        1 => 'Aktif',
+                        0 => 'Tidak Aktif (Alumni/Keluar)',
+                    ]),
+                    ])
             ->actions([
                 EditAction::make(),
                 DeleteAction::make(),

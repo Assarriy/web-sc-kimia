@@ -69,18 +69,20 @@ class AchievementResource extends Resource
                 
                 Tables\Columns\TextColumn::make('title')
                     ->label('Prestasi')
-                    ->searchable()
+                    ->searchable() // Bisa dicari
                     ->description(fn (Achievement $record): string => $record->event_name ?? ''),
 
                 Tables\Columns\TextColumn::make('rank')
                     ->label('Peringkat')
                     ->badge()
-                    ->color('success'),
+                    ->color('success')
+                    ->searchable(), // PERUBAHAN: Peringkat (Juara 1, dst) bisa dicari
 
                 Tables\Columns\TextColumn::make('date')
                     ->label('Tanggal')
                     ->date('d M Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(), // PERUBAHAN: Tanggal bisa dicari
             ])
             ->actions([
                 EditAction::make(),
