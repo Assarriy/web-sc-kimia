@@ -1,10 +1,18 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
 Route::get('/', function () {
-    return view('welcome');
+    if (Auth::check()) {
+        if (Auth::user()->hasRole('coach')) {
+            return redirect('/admin');
+        }
+
+        return redirect()->route('dashboard');
+    }
+
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -17,21 +25,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', function () {
-        return 'Admin area';
-    })->name('admin.home');
-});
-
 Route::middleware(['auth', 'role:coach'])->group(function () {
     Route::get('/coach', function () {
-        return 'Coach area';
+        return view('coach.dashboard');
     })->name('coach.home');
 });
 
 Route::middleware(['auth', 'role:member'])->group(function () {
     Route::get('/member', function () {
-        return 'Member area';
+        return view('member.dashboard');
     })->name('member.home');
 });
 
