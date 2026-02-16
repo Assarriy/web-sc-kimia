@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('SC Kimia')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -41,6 +42,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
+                StatsOverview::class,
             ])
             ->middleware([
                 EncryptCookies::class,
