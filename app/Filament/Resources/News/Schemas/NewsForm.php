@@ -80,7 +80,8 @@ class NewsForm
                                 FileUpload::make('image')
                                     ->label('Thumbnail Berita')
                                     ->image()
-                                    ->directory('news/images')
+                                    ->disk('public')
+                                    ->directory('news')
                                     ->imageEditor(),
 
                                 Select::make('category')

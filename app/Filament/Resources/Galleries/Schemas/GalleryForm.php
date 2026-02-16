@@ -48,8 +48,9 @@ class GalleryForm
 
                                 FileUpload::make('file_path')
                                     ->label('File Foto')
+                                    ->disk('public')
                                     ->image()
-                                    ->directory('gallery/photos')
+                                    ->directory('gallery')
                                     ->visible(fn($get) => $get('type') === 'image')
                                     ->required(fn($get) => $get('type') === 'image')
                                     ->imageEditor(),
