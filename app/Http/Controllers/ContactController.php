@@ -9,18 +9,23 @@ class ContactController extends Controller
 {
     public function store(Request $request)
     {
-        // Validasi data yang masuk
+        // Validasi data
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'subject' => 'required|string|max:255',
             'message' => 'required|string',
         ]);
 
-        // Simpan ke database
-        ContactMessage::create($validated);
+        // Simpan ke database agar muncul di Filament Admin Panel
+        ContactMessage::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'subject' => 'Pesan dari Halaman About',
+            'message' => $validated['message'],
+            'is_read' => false,
+        ]);
 
-        // Kembali ke halaman sebelumnya dengan pesan sukses
-        return back()->with('success', 'Pesan Anda berhasil dikirim!');
+        // Redirect kembali ke halaman About dengan pesan sukses
+        return redirect()->route('about')->with('success', 'Pesan Anda berhasil dikirim ke Admin SC Kimia!');
     }
 }
