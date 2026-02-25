@@ -6,6 +6,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -20,71 +21,89 @@ class NewsForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Grid::make(1)->schema([
-                // AREA KIRI (KONTEN UTAMA)
-                Section::make('Konten Berita')
-                    ->description('Detail berita atau pengumuman SC Kimia.')
-                    ->schema([
-                        TextInput::make('title')
-                            ->label('Judul Berita')
-                            ->required()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+            // Grid utama: 1 kolom di mobile (default), 3 kolom di desktop (lg)
+            Grid::make([
+                'default' => 1,
+                'lg' => 3,
+            ])->schema([
 
-                        TextInput::make('slug')
-                            ->label('URL Slug')
-                            ->required()
-                            ->unique('news', 'slug', ignoreRecord: true)
-                            ->readOnly(),
-
-                        RichEditor::make('content')
-                            ->label('Isi Berita')
-                            ->required()
-                            // Toolbar disederhanakan agar tidak merusak layout
-                            ->toolbarButtons([
-                                'bold',
-                                'italic',
-                                'underline',
-                                'strike',
-                                'subscript',
-                                'superscript',
-                                'h2',
-                                'h3',
-                                'bulletList',
-                                'orderedList',
-                                'link',
-                                'attachFiles',
-                                'undo',
-                                'redo',
+                        // AREA KIRI (KONTEN UTAMA) - Mengambil 2 dari 3 kolom
+                        Section::make('Konten Berita')
+                            ->description('Detail berita atau pengumuman SC Kimia.')
+                            ->columnSpan([
+                                'default' => 1,
+                                'lg' => 2,
                             ])
-                            ->fileAttachmentsDirectory('news/attachments'),
-                    ])->grow(), // Bagian ini akan mengambil ruang sisa
+                            ->schema([
+                                TextInput::make('title')
+                                    ->label('Judul Berita')
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
-                // AREA KANAN (SIDEBAR)
-                Section::make('Status & Media')
-                    ->schema([
-                        FileUpload::make('image')
-                            ->label('Thumbnail')
-                            ->image()
-                            ->directory('news/images')
-                            ->imageEditor(),
+                                TextInput::make('slug')
+                                    ->label('URL Slug')
+                                    ->required()
+                                    ->unique('news', 'slug', ignoreRecord: true)
+                                    ->readOnly()
+                                    ->extraAttributes(['class' => 'bg-gray-50']),
 
-                        Select::make('category')
-                            ->options([
-                                'berita' => 'Berita',
-                                'pengumuman' => 'Pengumuman',
+                                RichEditor::make('content')
+                                    ->label('Isi Berita')
+                                    ->required()
+                                    ->toolbarButtons([
+                                        'bold',
+                                        'italic',
+                                        'underline',
+                                        'strike',
+                                        'subscript',
+                                        'superscript',
+                                        'h2',
+                                        'h3',
+                                        'bulletList',
+                                        'orderedList',
+                                        'link',
+                                        'attachFiles',
+                                        'undo',
+                                        'redo',
+                                    ])
+                                    ->fileAttachmentsDirectory('news/attachments'),
+                            ]),
+
+                        // AREA KANAN (SIDEBAR) - Mengambil 1 dari 3 kolom
+                        Section::make('Status & Media')
+                            ->columnSpan([
+                                'default' => 1,
+                                'lg' => 1,
                             ])
-                            ->required()
-                            ->native(false),
+                            ->schema([
+                                FileUpload::make('image')
+                                    ->label('Thumbnail Berita')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('news')
+                                    ->imageEditor(),
 
-                        Toggle::make('is_published')
-                            ->label('Publikasikan')
-                            ->default(true),
+                                Select::make('category')
+                                    ->label('Kategori')
+                                    ->options([
+                                        'berita' => 'Berita',
+                                        'pengumuman' => 'Pengumuman',
+                                    ])
+                                    ->required()
+                                    ->native(false),
 
-                        Hidden::make('user_id')
-                            ->default(fn() => auth()->id()),
-                    ])->extraAttributes(['class' => 'w-full md:max-w-[320px]']), // Mengunci lebar sidebar
-            ])->columnSpanFull(),
+                                Toggle::make('is_published')
+                                    ->label('Publikasikan')
+                                    ->default(true),
+
+                                Hidden::make('user_id')
+                                    ->default(fn() => auth()->id()),
+                            ])
+                            // Mengunci lebar sidebar agar tidak meluap di desktop
+                            ->extraAttributes(['class' => 'w-full md:max-w-[320px]']),
+
+                    ])->columnSpanFull(),
         ]);
     }
 }
